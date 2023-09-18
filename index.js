@@ -1,8 +1,8 @@
 console.log(`please be happy now please`);
-let stateOfGuess = false;
-let i = 9;
-let comparation = "";
-let submitNumber;
+var stateOfGuess = false;
+var i = 9;
+var comparation = "";
+var submitNumber;
 const randomNumber = Math.floor(Math.random()*100+1);
 function compareGuess(){
         submitNumber = document.getElementById("guessField").value;
