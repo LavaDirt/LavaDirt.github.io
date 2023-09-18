@@ -34,4 +34,3 @@ function compareGuess(){
         }}
     else {};
     }
-    console.log(randomNumber);
