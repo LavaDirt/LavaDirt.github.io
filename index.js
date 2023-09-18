@@ -1,8 +1,8 @@
-let randomNumber = Math.floor(Math.random()*100+1);
 let stateOfGuess = false;
 let i = 9;
 let comparation = "";
 let submitNumber;
+const randomNumber = Math.floor(Math.random()*100+1);
 function compareGuess(){
         submitNumber = document.getElementById("guessField").value;
         submitNumber = Number(submitNumber);
