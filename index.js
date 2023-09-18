@@ -1,3 +1,4 @@
+//what the fuck man
 let stateOfGuess = false;
 let i = 9;
 let comparation = "";
