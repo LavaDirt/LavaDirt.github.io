@@ -13,7 +13,8 @@ function compareGuess(){
             comparation = `${comparation} ${submitNumber}↑`}
         else{
             comparation = `You won! The number is ${randomNumber}`;
-            stateOfGuess = true;}  
+            stateOfGuess = true;
+            document.getElementById("numberOfTries").innerHTML = ``}  
         i-=1
         document.getElementById("lastGuess").innerHTML = comparation;
 }
