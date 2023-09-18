@@ -1,4 +1,4 @@
-//what the fuck man
+console.log(`please be happy now please`);
 let stateOfGuess = false;
 let i = 9;
 let comparation = "";
