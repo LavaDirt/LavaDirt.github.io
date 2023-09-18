@@ -3,7 +3,7 @@ var stateOfGuess = false;
 var i = 9;
 var comparation = "";
 var submitNumber;
-const randomNumber = Math.floor(Math.random()*100+1);
+var randomNumber = Math.floor(Math.random()*100+1);
 function compareGuess(){
         submitNumber = document.getElementById("guessField").value;
         submitNumber = Number(submitNumber);
