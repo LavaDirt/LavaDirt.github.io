@@ -1,4 +1,3 @@
-console.log(`please be happy now please`);
 var stateOfGuess = false;
 var i = 4;
 var comparation = "";
@@ -36,3 +35,4 @@ function compareGuess(){
         }}
     else {};
     }
+console.log(randomNumber);
