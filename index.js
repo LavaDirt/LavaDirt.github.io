@@ -1,6 +1,6 @@
 console.log(`please be happy now please`);
 var stateOfGuess = false;
-var i = 9;
+var i = 4;
 var comparation = "";
 var submitNumber;
 var randomNumber = Math.floor(Math.random()*100+1);
