@@ -44,10 +44,29 @@ function start() {
 }
 
 function splitIntoSentences(text) {
-  // Split on punctuation marks (., !, ?) followed by space or end of string
-  const matches = text.match(/[^.!?]+[.!?]?/g);
-  return matches ? matches.map(s => s.trim()) : [text];
+  // Regex to find URLs (http or https)
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+  // Extract URLs and temporarily replace them with placeholders
+  const urls = [];
+  let tempText = text.replace(urlRegex, (match) => {
+    urls.push(match);
+    return `__URL${urls.length - 1}__`; // placeholder
+  });
+
+  // Now split tempText by sentence-ending punctuation
+  const sentenceRegex = /[^.!?]+[.!?]+|[^.!?]+$/g;
+  let sentences = tempText.match(sentenceRegex) || [];
+
+  // Replace placeholders back with original URLs
+  sentences = sentences.map(sentence => {
+    return sentence.replace(/__URL(\d+)__/g, (_, index) => urls[index]);
+  });
+
+  // Trim whitespace from each sentence
+  return sentences.map(s => s.trim());
 }
+
 
 function showNext() {
   if (isTyping) return; // Prevent skipping while typing
