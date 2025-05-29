@@ -1,21 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Number Guessing Game</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tia's message to everyone</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    #inputBox {
+      margin-bottom: 20px;
+    }
+    #textBox {
+      border: 2px solid #333;
+      padding: 15px;
+      min-height: 100px;
+      cursor: pointer;
+      user-select: none;
+      max-width: 600px;
+      white-space: pre-wrap;
+      /* preserve spaces and line breaks */
+    }
+    #textContent {
+      font-size: 18px;
+      line-height: 1.4;
+    }
+    #imageContent {
+      margin-top: 10px;
+      max-width: 100%;
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <h1>NUMBER GUESSING GAME</h1>
-    <p>Pick a number between 1 and 100!:</p>
-    <label for="guessField">Make a guess:</label>
-    <input id="guessField">
-    <button id="submitButton">Submit</button>
-    <button id="reset">Reset</button> 
-    <p id="numberOfTries"></p>
-    <p id="lastGuess"></p>
+  <div id="inputBox">
+    <input type="text" id="name" placeholder="Enter your name..." />
+    <button onclick="start()">Submit</button>
+  </div>
+
+  <div id="textBox" style="display:none;">
+    <div id="textContent"></div>
+    <img id="imageContent" />
+  </div>
+
+  <!-- INLINE JSON DATA -->
+  <script>
+    const data = {
+      "Paige": {
+        "message": "Gosh darn, I got the big boss to read this. I always have the feeling you want more for your people, but policies held you back. Either way, I do hope you are lucky in your future endeavors."
+      },
+      "Sam": {
+        "message": "I know you want more for your customers, but it is unfortunate that you are working for some not so decent people. You are a good person though. Thank you for escalating all the absurd tickets I threw at you."
+      },
+      "Peter": {
+        "message": "One of the chiller boss I have met for sure. It is a pleasure to work with you."
+      },
+      "Mike": {
+        "message": "I mean, I don't know what you see in me that makes you think I qualify for AirVoice. I appreciate the opportunity though."
+      },
+      "Kian": {
+        "message": "We don't really talk much unfortunately. But that's some nice hair you got."
+      },
+      "Nick": {
+        "message": "We don't really talk much unfortunately. I like your hair though, you handsome man."
+      },
+      "Mason": {
+        "message": "Have I ever paid you for the FCC SV ticket I gave you?"
+      },
+      "Haien": {
+        "message": "You are the fiercest person I have ever met. That fire inside you will carry you far."
+      },
+      "Helen": {
+        "message": "We didn't get to talk too much unfortunately. I can see the kindness inside you though. It's hard to imagine how messy things get without you and Sam on the site."
+      },
+      "Lux": {
+        "password": "AAV171700467498",
+        "message": "I will be real, I really hate yelling at you and I regret things I say 5 minutes after I say it. Sorry for being a horrible person to you."
+      },
+      "Audrey": {
+        "message": "I would have put a password for your message but I know you would be too lazy to find the password. Laziness sparks creativity though, and you are one of the most creative person I met. I don't really have anything to tell you as I believe we'll meet again, so here's the origin of my name. Ready? https://www.facebook.com/quockhanh.nguyen.7564129/"
+      },
+      "Levi": {
+        "message": "I don't think anyone matches your chillness. I wonder how the heck can you keep your chill under whatever customers throw at you."
+      },
+      "Lily": {
+        "message": "We don't talk much but you care a lot about others. Give care and people will care for you back."
+      },
+      "Charlie": {
+        "message": "Muscles. Gosh darn muscles."
+      },
+      "Dani": {
+        "message": "Most handsome man I have ever seen in this site."
+      },
+      "Ryan": {
+        "message": "We don't talk as much as we should. You are a chill guy though."
+      },
+      "Diego": {
+        "password": "WAT1760675302",
+        "message": "I'll be real, I thought you liked Agnes not Lux, which is why I distanced myself from you. If I get hurt by something, I cut every ties to it. If Agnes told you everything, you can see what happens if I become toxic. Apologies for the wrong conclusion. I am self-destructive to everything I know when I'm angry. Must be hurtful for you too. If you want to talk to me or listen to how disturbing I am when I hate myself, my Zalo is open."
+      },
+      "Louis": {
+        "message": "What makes you think I have a special message for you? You already know everything about me. For real though, thanks for being with me through May. It was horrible, and it still is. Your presence does make it less horrible though."
+      },
+      "Sarah": {
+        "message": "Surely we don't meet again at Softel. I'll keep an eye for you."
+      },
+      "Larry": {
+        "message": "Wise guy running away before this becomes a thing. Good luck at iTech."
+      },
+      "Tia": {
+        "message": "You gotta sleep my man. Also, love yourself a bit more. It won't hurt."
+      },
+      "Sean": {
+        "message": "I like how chill you are. Feels like no one can ever make you angry."
+      },
+      "Min": {
+        "message": "Your game recommendation is wonderful lol. I really want to play the games with you and Louis sometimes. Hope we keep contacts even after the project goes down."
+      },
+      "Anne": {
+        "password": "WAT1686340315",
+        "message": "I mean, you know me more than most, do you really need to read this? I guess I should give you something for your curiosity. Please tell Tia 'Pancake' to have him tell you a very disturbing story. Aside of that though, you are a very considerate person. Thank you for listening to my stories."
+      },
+      "Dan": {
+        "message": "You are a joy to be around, and you are like me in some ways. We both never grow up. I see myself inside of you a disturbing amount and I don't like it. Hope you can love yourself more than I love myself, it is hard."
+      },
+      "Shawn": {
+        "message": "I like big guys. You always feel warmer whenever I meet you for some reason."
+      },
+      "Chris": {
+        "message": "Biggggg guy. I like your smile, it brightens up an entire room. Have you consider smiling more?"
+      },
+      "Minnie": {
+        "message": "I don't have much to say as we don't really know each other, but your fashion sense is impeccable. Have you consider a model career?"
+      },
+      "Agnes": {
+        "password": "WAT1764931572",
+        "message": "This is the hardest one for me to write and I don't even know if you will read it. I think even a blind man can see that I like you, like it's not really a big secret or anything. Then I fucked up because I don't know how to deal with you not wanting me around. I really want to be your friend, and I enjoyed your company greatly. My Zalo is open, and I really wish you could forgive me. I'm very sorry for what happened between us."
+      },
+      "Nemo": {
+        "message": "I trained you for just 2 days but you are a star. You made me very proud."
+      },
+      "Katerina": {
+        "message": "Did you forget to close your NUC ticket again?"
+      },
+      "Lucy": {
+        "message": "I am very proud of how far you have come. You weren't meant to be here in the first place, but determination got you through. Keep your determination, it will carry you through everything."
+      },
+      "Julie": {
+        "message": "Did you forget to close your MDN change ticket?"
+      },
+      "Twan": {
+        "message": "I trained you for one day and you passed. Gosh darn you're a star. Amazing work, big guy."
+      },
+      "Andy": {
+        "message": "You should really work on security. No person would let someone like me control their PC. Not saying I'm stealing anything though. Hope my program helped you."
+      },
+      "Susan": {
+        "message": "Unfortunately your time here is too short for me to come to a cohesive conclusion about you. With that said though, the news must have been shocking for you. I hope a new job will come swiftly."
+      },
+      "Mark": {
+        "message": "Unfortunately your time here is too short for me to come to a cohesive conclusion about you. With that said though, the news must have been shocking for you. I hope a new job will come swiftly."
+      },
+      "Jayden": {
+        "message": "Unfortunately your time here is too short for me to come to a cohesive conclusion about you. With that said though, the news must have been shocking for you. I hope a new job will come swiftly."
+      },
+      "Lui": {
+        "message": "Unfortunately your time here is too short for me to come to a cohesive conclusion about you. With that said though, the news must have been shocking for you. I hope a new job will come swiftly."
+      },
+      "Max": {
+        "message": "Unfortunately your time here is too short for me to come to a cohesive conclusion about you. With that said though, the news must have been shocking for you. I hope a new job will come swiftly."
+      },
+      "Eric": {
+        "message": "Unfortunately your time here is too short for me to come to a cohesive conclusion about you. With that said though, the news must have been shocking for you. I hope a new job will come swiftly."
+      },
+      "Ethan": {
+        "message": "Unfortunately your time here is too short for me to come to a cohesive conclusion about you. With that said though, the news must have been shocking for you. I hope a new job will come swiftly."
+      },
+      "David": {
+        "message": "Unfortunately your time here is too short for me to come to a cohesive conclusion about you. With that said though, the news must have been shocking for you. I hope a new job will come swiftly."
+      },
+      "James": {
+        "message": "Unfortunately your time here is too short for me to come to a cohesive conclusion about you. With that said though, the news must have been shocking for you. I hope a new job will come swiftly."
+      },
+      "Amelia": {
+        "message": "Unfortunately your time here is too short for me to come to a cohesive conclusion about you. With that said though, the news must have been shocking for you. I hope a new job will come swiftly."
+      },
+      "Oscar": {
+        "message": "Unfortunately your time here is too short for me to come to a cohesive conclusion about you. With that said though, the news must have been shocking for you. I hope a new job will come swiftly."
+      },
+      "Donk": {
+        "message": "Unfortunately your time here is too short for me to come to a cohesive conclusion about you. With that said though, the news must have been shocking for you. I hope a new job will come swiftly."
+      },
+      "Kevin": {
+        "message": "You are so unlucky my guy. I hope you will get a new job soon because gosh darn."
+      }
+    };
+  </script>
+  
+
+  <script src="script.js"></script>
 </body>
-    <script src="index.js"></script>
 </html>
