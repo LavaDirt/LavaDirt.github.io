@@ -43,6 +43,12 @@
     </div>
 
     <script>
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+            document.getElementById('calculateButton').click();
+                                }
+            });
+
         function calculateFee() {
             let retailPrice = parseFloat(document.getElementById('retailPrice').value);
             let amountPaid = parseFloat(document.getElementById('amountPaid').value);
