@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancellation Fee Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            text-align: center;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Cancellation Fee Calculator</h2>
+    <div class="container">
+        <label for="daysLeft">Days Left Before 180:</label>
+        <input type="number" id="daysLeft" placeholder="Enter days left">
+
+        <label for="retailPrice">Phone Price In Device Agreement:</label>
+        <input type="number" id="retailPrice" placeholder="Enter retail price">
+
+        <label for="amountPaid">Amount Paid (0 if free phone, empty = 0):</label>
+        <input type="number" id="amountPaid" placeholder="Enter amount paid">
+
+        <button id="calculateButton" onclick="calculateFee()">Calculate</button>
+        <h3 id="result"></h3>
+    </div>
+
+    <script>
+        function calculateFee() {
+            let retailPrice = parseFloat(document.getElementById('retailPrice').value);
+            let amountPaid = parseFloat(document.getElementById('amountPaid').value);
+            let daysLeft = parseInt(document.getElementById('daysLeft').value);
+            
+            if (isNaN(retailPrice) || isNaN(amountPaid)) {
+                document.getElementById('result').innerText = "Please enter valid numbers.";
+                return;
+            }
+            
+            if (daysLeft > 180) daysLeft = 180;
+            if (daysLeft < 0 || isNaN(daysleft)) daysLeft = 0;
+            
+            let fee = ((retailPrice - amountPaid) * daysLeft) / 180;
+            document.getElementById('result').innerText = "Cancellation Fee: $" + fee.toFixed(2);
+            
+            if (Math.random() < 0.1) {
+                document.getElementById('calculateButton').innerText = "I'm ready to get yelled at by our valued customer";
+            } else {
+                document.getElementById('calculateButton').innerText = "Calculate";
+            }
+        }
+    </script>
+</body>
+</html>
