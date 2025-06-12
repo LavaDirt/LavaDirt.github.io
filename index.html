@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cancellation Fee Calculator</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
             text-align: center;
+            padding: 40px;
+            margin: 0;
             background-color: #f9f9f9;
         }
 
@@ -17,6 +22,7 @@
             padding: 10px 0;
             display: flex;
             justify-content: center;
+            width: 100%;
         }
 
         nav a {
@@ -31,21 +37,33 @@
             border-radius: 5px;
         }
 
-        .container {
-            max-width: 400px;
+        .content {
+            max-width: 600px;
             margin: 40px auto;
-            padding: 20px;
             background: #fff;
-            border: 1px solid #ccc;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        input, button {
-            width: 100%;
-            padding: 10px;
+        .number-entry {
             margin: 10px 0;
-            font-size: 16px;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-style: italic;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .group-label {
+            margin-top: 25px;
+            font-weight: bold;
+            font-size: 20px;
+            text-align: left;
         }
     </style>
 </head>
