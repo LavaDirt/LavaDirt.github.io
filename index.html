@@ -7,17 +7,40 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 40px;
+            margin: 0;
             text-align: center;
+            background-color: #f9f9f9;
         }
+
+        nav {
+            background-color: #333;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav a {
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a.active {
+            background-color: #555;
+            border-radius: 5px;
+        }
+
         .container {
             max-width: 400px;
-            margin: auto;
+            margin: 40px auto;
             padding: 20px;
+            background: #fff;
             border: 1px solid #ccc;
             border-radius: 10px;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
         }
+
         input, button {
             width: 100%;
             padding: 10px;
@@ -27,6 +50,12 @@
     </style>
 </head>
 <body>
+
+    <nav>
+        <a href="index.html" class="active">Cancellation Calculator</a>
+        <a href="numbers.html">Numbers Index</a>
+    </nav>
+
     <h2>Cancellation Fee Calculator</h2>
     <div class="container">
         <label for="daysLeft">Days Left Before 180:</label>
@@ -45,9 +74,9 @@
     <script>
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
-            document.getElementById('calculateButton').click();
-                                }
-            });
+                document.getElementById('calculateButton').click();
+            }
+        });
 
         function calculateFee() {
             let retailPrice = parseFloat(document.getElementById('retailPrice').value);
