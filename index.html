@@ -48,13 +48,13 @@
             let amountPaid = parseFloat(document.getElementById('amountPaid').value);
             let daysLeft = parseInt(document.getElementById('daysLeft').value);
             
-            if (isNaN(retailPrice) || isNaN(amountPaid)) {
+            if (isNaN(retailPrice) || isNaN(daysLeft)) {
                 document.getElementById('result').innerText = "Please enter valid numbers.";
                 return;
             }
-            
+            if (isNaN(amountPaid)) amountPaid = 0;
             if (daysLeft > 180) daysLeft = 180;
-            if (daysLeft < 0 || isNaN(daysleft)) daysLeft = 0;
+            if (daysLeft < 0) daysLeft = 0;
             
             let fee = ((retailPrice - amountPaid) * daysLeft) / 180;
             document.getElementById('result').innerText = "Cancellation Fee: $" + fee.toFixed(2);
