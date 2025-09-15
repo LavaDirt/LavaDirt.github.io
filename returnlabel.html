@@ -91,33 +91,33 @@
   </div>
 
   <script>
-    // Example ZPL - replace with real label data
-    const zpl = `^XA
-    ^FO50,50^ADN,36,20^FDHello World^FS
-    ^XZ`;
+  // Example ZPL - replace with real label data
+  const zpl = `^XA
+  ^FO50,50^ADN,36,20^FDHello World^FS
+  ^XZ`;
 
-    async function render() {
-      const response = await fetch("https://api.labelary.com/v1/printers/8dpmm/labels/4x6/0/", {
-  method: "POST",
-  headers: {
-    "Accept": "image/png"
-  },
-  body: zpl
-});
+  async function render() {
+    const response = await fetch("https://api.labelary.com/v1/printers/8dpmm/labels/4x6/0/", {
+      method: "POST",
+      headers: {
+        "Accept": "image/png"
+      },
+      body: zpl
+    });
 
+    const label = document.getElementById("label");
 
-      const label = document.getElementById("label");
-
-      if (response.ok) {
-        const blob = await response.blob();
-        label.src = URL.createObjectURL(blob);
-        label.classList.add("flipped"); // flip only image, not text
-      } else {
-        label.alt = "Error rendering label: " + response.status;
-      }
+    if (response.ok) {
+      const blob = await response.blob();
+      label.src = URL.createObjectURL(blob);
+      label.classList.add("flipped");
+    } else {
+      label.alt = "Error rendering label: " + response.status;
     }
+  }
 
-    render();
-  </script>
+  render();
+</script>
+
 </body>
 </html>
