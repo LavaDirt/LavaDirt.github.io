@@ -41,6 +41,10 @@
       margin-top: 10px;
       max-width: 100%;
     }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -53,13 +57,18 @@
   <div class="preview">
     <h2>Preview</h2>
     <img id="label" alt="Rendered label will appear here">
+    <p id="error" class="error"></p>
   </div>
 
   <script>
     async function renderZPL() {
       const zpl = document.getElementById("zpl").value.trim();
+      const errorBox = document.getElementById("error");
+      errorBox.textContent = ""; // clear old error
+      document.getElementById("label").src = ""; // clear old preview
+
       if (!zpl) {
-        alert("Please paste ZPL code first.");
+        errorBox.textContent = "Please paste ZPL code first.";
         return;
       }
 
@@ -74,10 +83,11 @@
           const blob = await response.blob();
           document.getElementById("label").src = URL.createObjectURL(blob);
         } else {
-          alert("Error: " + response.status + " " + response.statusText);
+          // Only show serious HTTP errors, not warnings
+          errorBox.textContent = "Failed to render (HTTP " + response.status + ")";
         }
       } catch (err) {
-        alert("Failed to fetch: " + err.message);
+        errorBox.textContent = "Network error: " + err.message;
       }
     }
   </script>
