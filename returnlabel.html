@@ -2,28 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ZPL Label Renderer</title>
+  <title>Return Label Renderer</title>
   <style>
     body {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      height: 100vh;
+      padding: 20px;
       background: #f4f4f4;
+      font-family: Arial, sans-serif;
+    }
+    nav {
+      margin-bottom: 20px;
+    }
+    nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #0073e6;
+    }
+    nav a.active {
+      font-weight: bold;
+    }
+    #instructions {
+      margin: 15px 0;
+      padding: 10px;
+      background: #fff8c6;
+      border: 1px solid #ccc;
+      width: 80%;
+      max-width: 700px;
+    }
+    textarea {
+      width: 80%;
+      max-width: 700px;
+      height: 150px;
+      margin: 10px 0;
+      padding: 8px;
+      font-family: monospace;
+      border: 1px solid #ccc;
     }
     img {
       border: 2px solid #333;
+      margin-top: 20px;
       transform: scaleX(-1); /* flip horizontally */
     }
   </style>
 </head>
 <body>
+  <nav>
+    <a href="index.html">Cancellation Calculator</a>
+    <a href="numbers.html">Numbers Index</a>
+    <a href="links.html">Links Index</a>
+    <a href="returnlabel.html" class="active">Return Label</a>
+  </nav>
+
+  <div id="instructions">
+    <strong>Instructions:</strong><br>
+    Step 1: Go to the link it shows you.<br>
+    Step 2: Copy the code it shows.<br>
+    Step 3: Paste it into the box below.<br>
+  </div>
+
+  <textarea id="zplInput" placeholder="Paste your ZPL code here..."></textarea>
   <img id="label" alt="Label will appear here"/>
 
   <script>
-    const zpl = `YOUR ZPL CODE HERE`;
-
     async function render() {
+      const zpl = document.getElementById("zplInput").value;
+      if (!zpl.trim()) return;
+
       const response = await fetch("https://api.labelary.com/v1/printers/8dpmm/labels/4x6/0/", {
         method: "POST",
         headers: { 
@@ -32,15 +78,18 @@
         },
         body: zpl
       });
+
+      const label = document.getElementById("label");
       if (response.ok) {
         const blob = await response.blob();
-        document.getElementById("label").src = URL.createObjectURL(blob);
+        label.src = URL.createObjectURL(blob);
       } else {
-        document.getElementById("label").alt = "Error rendering label: " + response.status;
+        label.alt = "Error rendering label: " + response.status;
       }
     }
 
-    render();
+    // Render automatically when you paste ZPL
+    document.getElementById("zplInput").addEventListener("input", render);
   </script>
 </body>
 </html>
