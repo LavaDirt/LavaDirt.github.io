@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ZPL Label Renderer</title>
+  <title>Return Label Renderer</title>
   <style>
     body {
       display: flex;
@@ -27,7 +27,7 @@
   <img id="label" alt="Label will appear here"/>
 
   <script>
-    const zpl = `YOUR ZPL CODE HERE`;
+    const zpl = `Step 1: Go to the link it shows you. Step 2: Copy the code it shows. Step 3: Paste it here.`;
 
     async function render() {
       const response = await fetch("https://api.labelary.com/v1/printers/8dpmm/labels/4x6/0/", {
