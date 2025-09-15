@@ -5,95 +5,42 @@
   <title>ZPL Label Renderer</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       background: #f4f4f4;
     }
-    h1 {
-      text-align: center;
-    }
-    textarea {
-      width: 100%;
-      height: 200px;
-      font-family: monospace;
-      font-size: 14px;
-      padding: 10px;
-      margin-bottom: 1rem;
-    }
-    button {
-      background: #0078d7;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      cursor: pointer;
-      font-size: 16px;
-      border-radius: 4px;
-    }
-    button:hover {
-      background: #005a9e;
-    }
-    .preview {
-      margin-top: 2rem;
-      text-align: center;
-    }
     img {
-      border: 1px solid #ccc;
-      margin-top: 10px;
-      max-width: 100%;
-    }
-    .error {
-      color: red;
-      font-weight: bold;
+      border: 2px solid #333;
+      transform: scaleX(-1); /* flip horizontally */
     }
   </style>
 </head>
 <body>
-  <h1>ZPL to PNG Renderer</h1>
-  <p>Paste your ZPL code below and click "Render" to preview the label.</p>
-
-  <textarea id="zpl">^XA^FO50,50^A0N,50,50^FDHello ZPL!^FS^XZ</textarea><br>
-  <button onclick="renderZPL()">Render</button>
-
-  <div class="preview">
-    <h2>Preview</h2>
-    <img id="label" alt="Rendered label will appear here">
-    <p id="error" class="error"></p>
-  </div>
+  <img id="label" alt="Label will appear here"/>
 
   <script>
-    async function renderZPL() {
-      const zpl = document.getElementById("zpl").value.trim();
-      const errorBox = document.getElementById("error");
-      errorBox.textContent = ""; // clear old error
-      document.getElementById("label").src = ""; // clear old preview
+    const zpl = `YOUR ZPL CODE HERE`;
 
-      if (!zpl) {
-        errorBox.textContent = "Please paste ZPL code first.";
-        return;
-      }
-
-      try {
-            const response = await fetch("https://api.labelary.com/v1/printers/8dpmm/labels/4x6/0/", {
-          method: "POST",
-          headers: { 
-            "Accept": "image/png",
-            "Content-Type": "application/x-www-form-urlencoded"   // <-- important
-          },
-          body: zpl
-});
-
-
-        if (response.ok) {
-          const blob = await response.blob();
-          document.getElementById("label").src = URL.createObjectURL(blob);
-        } else {
-          // Only show serious HTTP errors, not warnings
-          errorBox.textContent = "Failed to render (HTTP " + response.status + ")";
-        }
-      } catch (err) {
-        errorBox.textContent = "Network error: " + err.message;
+    async function render() {
+      const response = await fetch("https://api.labelary.com/v1/printers/8dpmm/labels/4x6/0/", {
+        method: "POST",
+        headers: { 
+          "Accept": "image/png",
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: zpl
+      });
+      if (response.ok) {
+        const blob = await response.blob();
+        document.getElementById("label").src = URL.createObjectURL(blob);
+      } else {
+        document.getElementById("label").alt = "Error rendering label: " + response.status;
       }
     }
+
+    render();
   </script>
 </body>
 </html>
