@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cancellation Fee Calculator</title>
+    <title>QR code scanner</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -50,58 +50,52 @@
     </style>
 </head>
 <body>
+  <h1>QR Scanner</h1>
+  <video id="video" autoplay playsinline></video>
+  <div id="result">No QR code detected</div>
+  <canvas id="canvas"></canvas>
 
-    <nav>
-        <a href="index.html" class="active">Cancellation Calculator</a>
-        <a href="numbers.html">Numbers Index</a>
-        <a href="links.html">Links Index</a>
-        <a href="returnlabel.html">Return Label</a>
-    </nav>
+  <!-- jsQR via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const resultDiv = document.getElementById('result');
+    let lastResult = null;
 
-    <h2>Cancellation Fee Calculator</h2>
-    <div class="container">
-        <label for="daysLeft">Days Left Before 180:</label>
-        <input type="number" id="daysLeft" placeholder="Enter days left">
-
-        <label for="retailPrice">Phone Price In Device Agreement:</label>
-        <input type="number" id="retailPrice" placeholder="Enter retail price">
-
-        <label for="amountPaid">Amount Paid (0 if free phone, empty = 0):</label>
-        <input type="number" id="amountPaid" placeholder="Enter amount paid">
-
-        <button id="calculateButton" onclick="calculateFee()">Calculate</button>
-        <h3 id="result"></h3>
-    </div>
-
-    <script>
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                document.getElementById('calculateButton').click();
-            }
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" }
         });
+        video.srcObject = stream;
+        requestAnimationFrame(scanFrame);
+      } catch (err) {
+        resultDiv.textContent = 'Camera error: ' + err.message;
+      }
+    }
 
-        function calculateFee() {
-            let retailPrice = parseFloat(document.getElementById('retailPrice').value);
-            let amountPaid = parseFloat(document.getElementById('amountPaid').value);
-            let daysLeft = parseInt(document.getElementById('daysLeft').value);
-            
-            if (isNaN(retailPrice) || isNaN(daysLeft)) {
-                document.getElementById('result').innerText = "Please enter valid numbers.";
-                return;
-            }
-            if (isNaN(amountPaid)) amountPaid = 0;
-            if (daysLeft > 180) daysLeft = 180;
-            if (daysLeft < 0) daysLeft = 0;
-            
-            let fee = ((retailPrice - amountPaid) * daysLeft) / 180;
-            document.getElementById('result').innerText = "Cancellation Fee: $" + fee.toFixed(2);
-            
-            if (Math.random() < 0.1) {
-                document.getElementById('calculateButton').innerText = "I'm ready to get yelled at by our valued customer";
-            } else {
-                document.getElementById('calculateButton').innerText = "Calculate";
-            }
+    function scanFrame() {
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: "dontInvert"
+        });
+        if (code && code.data !== lastResult) {
+          lastResult = code.data;
+          resultDiv.textContent = 'QR: ' + code.data;
+          // If you want to stop after first scan, comment in next line:
+          // video.srcObject.getTracks().forEach(t => t.stop());
         }
-    </script>
+      }
+      requestAnimationFrame(scanFrame);
+    }
+
+    startCamera();
+  </script>
 </body>
 </html>
