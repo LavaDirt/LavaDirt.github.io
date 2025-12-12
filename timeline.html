@@ -40,6 +40,7 @@
         #inputBox {
             width: 100%;
             height: 150px;
+            resize: none;
         }
         #timeline {
             margin-top: 30px;
@@ -98,7 +99,8 @@ function parseTime(t) {
 }
 
 function drawTimeline() {
-    const raw = document.getElementById("inputBox").value.trim().split("\n");
+    const raw = document.getElementById("inputBox").value.trim().split("
+");
     const timeline = document.getElementById("timeline");
     timeline.innerHTML = "";
 
@@ -124,7 +126,7 @@ function drawTimeline() {
 
     // Parse calls
     let calls = raw.map(line => {
-        let parts = line.split("\t");
+        let parts = line.split("	");
         if (parts.length !== 2) return null;
         return { from: parseTime(parts[0]), to: parseTime(parts[1]) };
     }).filter(x => x);
@@ -174,12 +176,12 @@ function drawTimeline() {
 
     timeline.onmousemove = e => {
         if (!selecting) return;
-        const curr = e.offsetX;
-        const width = curr - startX;
+        let curr = Math.max(0, Math.min(e.offsetX, timeline.clientWidth));
+        let width = curr - startX;
         yellow.style.width = (width / timeline.clientWidth) * 100 + "%";
     };
 
-    timeline.onmouseup = () => selecting = false;
+    timeline.onmouseup = () => selecting = false; = () => selecting = false;
 }
 </script>
 
