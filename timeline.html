@@ -90,6 +90,10 @@
 </div>
 
 <script>
+let yellow = null;
+let drag = null;
+let startX = 0;
+
 function parseTime(t) {
     let [time, ampm] = t.split(" ");
     let [h, m] = time.split(":").map(Number);
@@ -99,19 +103,18 @@ function parseTime(t) {
 }
 
 function drawTimeline() {
-    const raw = document.getElementById("inputBox").value.trim().split("
-");
+    const raw = document.getElementById("inputBox").value.trim().split("\n");
     const timeline = document.getElementById("timeline");
-    timeline.innerHTML = "";
+
+    timeline.innerHTML = ""; // Clear everything EXCEPT yellow we re-add later
 
     const start = 8 * 60;
     const end = 17 * 60 + 30;
     const total = end - start;
 
-    // Hour markers FIRST
+    // --- Hour markers ---
     for (let h = 8; h <= 17; h++) {
         const pos = ((h * 60 - start) / total) * 100;
-
         const m = document.createElement("div");
         m.className = "hour-marker";
         m.style.left = pos + "%";
@@ -124,14 +127,14 @@ function drawTimeline() {
         timeline.appendChild(label);
     }
 
-    // Parse calls
+    // --- Parse call ranges ---
     let calls = raw.map(line => {
-        let parts = line.split("	");
+        let parts = line.split("\t");
         if (parts.length !== 2) return null;
         return { from: parseTime(parts[0]), to: parseTime(parts[1]) };
     }).filter(x => x);
 
-    // Busy segments
+    // --- Busy segments ---
     calls.forEach(c => {
         let div = document.createElement("div");
         div.className = "segment busy";
@@ -140,7 +143,7 @@ function drawTimeline() {
         timeline.appendChild(div);
     });
 
-    // Free segments
+    // --- Free segments ---
     let freeSegments = [];
     let last = start;
 
@@ -158,73 +161,71 @@ function drawTimeline() {
         timeline.appendChild(div);
     });
 
-    // Yellow override drag + resize tool
-    let drag = null;
-    let startX = 0;
+    // --- Restore yellow line at end so it stays on top ---
+    if (!yellow) {
+        yellow = document.createElement("div");
+        yellow.className = "segment override";
+        yellow.style.left = "20%";
+        yellow.style.width = "10%";
+        yellow.style.position = "absolute";
 
-    // persistent single yellow block
-    const yellow = document.createElement("div");
-    yellow.className = "segment override";
-    yellow.style.left = "20%";
-    yellow.style.width = "10%";
+        const leftH = document.createElement("div");
+        const rightH = document.createElement("div");
+        leftH.style.position = rightH.style.position = "absolute";
+        leftH.style.top = rightH.style.top = "0";
+        leftH.style.width = rightH.style.width = "6px";
+        leftH.style.height = rightH.style.height = "100%";
+        leftH.style.cursor = "ew-resize";
+        rightH.style.cursor = "ew-resize";
+        leftH.style.left = "0";
+        rightH.style.right = "0";
+
+        yellow.appendChild(leftH);
+        yellow.appendChild(rightH);
+
+        yellow.onmousedown = e => {
+            if (e.target === leftH) drag = "resize-left";
+            else if (e.target === rightH) drag = "resize-right";
+            else drag = "move";
+            startX = e.clientX;
+            e.preventDefault();
+        };
+
+        document.onmouseup = () => drag = null;
+        document.onmousemove = e => {
+            if (!drag) return;
+            const dx = e.clientX - startX;
+            startX = e.clientX;
+
+            const box = timeline.getBoundingClientRect();
+            const ybox = yellow.getBoundingClientRect();
+
+            let leftPct = (ybox.left - box.left) / box.width * 100;
+            let widthPct = ybox.width / box.width * 100;
+
+            if (drag === "move") {
+                leftPct += dx / box.width * 100;
+                leftPct = Math.max(0, Math.min(leftPct, 100 - widthPct));
+            }
+            if (drag === "resize-left") {
+                const change = dx / box.width * 100;
+                leftPct += change;
+                widthPct -= change;
+                if (widthPct < 1) widthPct = 1;
+                if (leftPct < 0) leftPct = 0;
+            }
+            if (drag === "resize-right") {
+                widthPct += dx / box.width * 100;
+                if (leftPct + widthPct > 100) widthPct = 100 - leftPct;
+                if (widthPct < 1) widthPct = 1;
+            }
+
+            yellow.style.left = leftPct + "%";
+            yellow.style.width = widthPct + "%";
+        };
+    }
+
     timeline.appendChild(yellow);
-
-    // resize handles
-    const leftH = document.createElement("div");
-    const rightH = document.createElement("div");
-    leftH.style.position = rightH.style.position = "absolute";
-    leftH.style.top = rightH.style.top = "0";
-    leftH.style.width = rightH.style.width = "6px";
-    leftH.style.height = rightH.style.height = "100%";
-    leftH.style.cursor = "ew-resize";
-    rightH.style.cursor = "ew-resize";
-    leftH.style.left = "0";
-    rightH.style.right = "0";
-    yellow.appendChild(leftH);
-    yellow.appendChild(rightH);
-
-    // drag main body
-    yellow.onmousedown = e => {
-        if (e.target === leftH) { drag = "resize-left"; }
-        else if (e.target === rightH) { drag = "resize-right"; }
-        else { drag = "move"; }
-        startX = e.clientX;
-        e.preventDefault();
-    };
-
-    document.onmousemove = e => {
-        if (!drag) return;
-        const dx = e.clientX - startX;
-        startX = e.clientX;
-
-        const box = timeline.getBoundingClientRect();
-        const ybox = yellow.getBoundingClientRect();
-
-        let leftPct = (ybox.left - box.left) / box.width * 100;
-        let widthPct = ybox.width / box.width * 100;
-
-        if (drag === "move") {
-            leftPct += dx / box.width * 100;
-            leftPct = Math.max(0, Math.min(leftPct, 100 - widthPct));
-        }
-        if (drag === "resize-left") {
-            const change = dx / box.width * 100;
-            leftPct += change;
-            widthPct -= change;
-            if (widthPct < 1) widthPct = 1;
-            if (leftPct < 0) leftPct = 0;
-        }
-        if (drag === "resize-right") {
-            widthPct += dx / box.width * 100;
-            if (leftPct + widthPct > 100) widthPct = 100 - leftPct;
-            if (widthPct < 1) widthPct = 1;
-        }
-
-        yellow.style.left = leftPct + "%";
-        yellow.style.width = widthPct + "%";
-    };
-
-    document.onmouseup = () => drag = null; = () => selecting = false; = () => selecting = false;
 }
 </script>
 
