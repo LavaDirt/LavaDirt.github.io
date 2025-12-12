@@ -89,105 +89,163 @@
     <div id="timeline"></div>
 </div>
 
+
 <script>
 let yellow = null;
 let drag = null;
 let startX = 0;
 
+// Parse "8:18 AM" -> minutes since midnight
 function parseTime(t) {
-    let [time, ampm] = t.split(/
-?
-/);
-    let [h, m] = time.split(":").map(Number);
-    if (ampm === "PM" && h !== 12) h += 12;
-    if (ampm === "AM" && h === 12) h = 0;
+    if (!t) return NaN;
+    t = t.trim();
+    // Split by whitespace: "8:18 AM" => ["8:18", "AM"]
+    const parts = t.split(/\s+/);
+    if (parts.length < 2) return NaN;
+    const timePart = parts[0];
+    const ampm = parts[1].toUpperCase();
+
+    const hm = timePart.split(':');
+    if (hm.length !== 2) return NaN;
+    let h = parseInt(hm[0], 10);
+    let m = parseInt(hm[1], 10);
+    if (Number.isNaN(h) || Number.isNaN(m)) return NaN;
+
+    if (ampm === 'PM' && h !== 12) h += 12;
+    if (ampm === 'AM' && h === 12) h = 0;
     return h * 60 + m;
 }
 
+// Merge overlapping/adjacent intervals
+function mergeIntervals(intervals) {
+    if (!intervals.length) return [];
+    intervals.sort((a, b) => a.from - b.from);
+    const merged = [];
+    let cur = { ...intervals[0] };
+    for (let i = 1; i < intervals.length; i++) {
+        const x = intervals[i];
+        if (x.from <= cur.to) {
+            // overlap or touch; extend
+            cur.to = Math.max(cur.to, x.to);
+        } else {
+            merged.push(cur);
+            cur = { ...x };
+        }
+    }
+    merged.push(cur);
+    return merged;
+}
+
 function drawTimeline() {
-    const raw = document.getElementById("inputBox").value.trim().split("
-");
-    const timeline = document.getElementById("timeline");
+    yellow = null; // reset override
+    const rawText = document.getElementById('inputBox').value;
+    const timeline = document.getElementById('timeline');
+    timeline.innerHTML = '';
 
-    timeline.innerHTML = "";
-
-    const start = 8 * 60;
-    const end = 17 * 60 + 30;
+    // Business hours
+    const start = 8 * 60;         // 8:00 AM
+    const end = 17 * 60 + 30;     // 5:30 PM
     const total = end - start;
 
-    // hour markers
+    // Hour markers and labels
     for (let h = 8; h <= 17; h++) {
         const pos = ((h * 60 - start) / total) * 100;
-        const m = document.createElement("div");
-        m.className = "hour-marker";
-        m.style.left = pos + "%";
+        const m = document.createElement('div');
+        m.className = 'hour-marker';
+        m.style.left = pos + '%';
         timeline.appendChild(m);
 
-        const label = document.createElement("div");
-        label.className = "hour-label";
-        label.style.left = pos + "%";
-        label.textContent = h + ":00";
+        const label = document.createElement('div');
+        label.className = 'hour-label';
+        label.style.left = pos + '%';
+        label.textContent = `${(h % 12) === 0 ? 12 : (h % 12)}:00 ${h < 12 ? 'AM' : 'PM'}`;
         timeline.appendChild(label);
     }
 
-    let calls = raw.map(line => {
-        let parts = line.split("	");
-        if (parts.length !== 2) return null;
-        return { from: parseTime(parts[0]), to: parseTime(parts[1]) };
-    }).filter(x => x);
+    // Parse lines robustly
+    const lines = rawText
+        .trim()
+        .split(/\r?\n/)        // handle \n and \r\n
+        .filter(line => line.trim().length > 0);
 
-    // busy segments
-    calls.forEach(c => {
-        let div = document.createElement("div");
-        div.className = "segment busy";
-        div.style.left = ((c.from - start) / total) * 100 + "%";
-        div.style.width = ((c.to - c.from) / total) * 100 + "%";
+    let calls = [];
+    for (const line of lines) {
+        const parts = line.split(/\t+/); // one or more tabs
+        if (parts.length < 2) continue;
+        const fromMin = parseTime(parts[0]);
+        const toMin = parseTime(parts[1]);
+
+        if (Number.isNaN(fromMin) || Number.isNaN(toMin)) continue;
+        // Skip invalid or zero-length (optional; keep zero-length if you want to see pips)
+        if (toMin < fromMin) continue;
+
+        // Clamp to business hours (optional)
+        const clampedFrom = Math.max(fromMin, start);
+        const clampedTo = Math.min(toMin, end);
+        if (clampedTo <= clampedFrom) continue;
+
+        calls.push({ from: clampedFrom, to: clampedTo });
+    }
+
+    // Merge overlaps/adjacent
+    calls = mergeIntervals(calls);
+
+    // Draw busy segments
+    for (const c of calls) {
+        const leftPct = ((c.from - start) / total) * 100;
+        const widthPct = ((c.to - c.from) / total) * 100;
+        const div = document.createElement('div');
+        div.className = 'segment busy';
+        div.style.left = leftPct + '%';
+        div.style.width = widthPct + '%';
         timeline.appendChild(div);
-    });
+    }
 
-    // free segments
-    let free = [];
-    let last = start;
-    calls.forEach(c => {
-        if (c.from > last) free.push({ from: last, to: c.from });
-        last = c.to;
-    });
-    if (last < end) free.push({ from: last, to: end });
+    // Compute and draw free segments
+    const free = [];
+    let cursor = start;
+    for (const c of calls) {
+        if (c.from > cursor) free.push({ from: cursor, to: c.from });
+        cursor = Math.max(cursor, c.to);
+    }
+    if (cursor < end) free.push({ from: cursor, to: end });
 
-    free.forEach(c => {
-        let div = document.createElement("div");
-        div.className = "segment free";
-        div.style.left = ((c.from - start) / total) * 100 + "%";
-        div.style.width = ((c.to - c.from) / total) * 100 + "%";
+    for (const f of free) {
+        const leftPct = ((f.from - start) / total) * 100;
+        const widthPct = ((f.to - f.from) / total) * 100;
+        const div = document.createElement('div');
+        div.className = 'segment free';
+        div.style.left = leftPct + '%';
+        div.style.width = widthPct + '%';
         timeline.appendChild(div);
-    });
+    }
 
-    // click to create yellow
+    // Click to create yellow override block
     timeline.onclick = e => {
-        if (yellow) return; // only one
-
+        if (yellow) return; // only one override
         const box = timeline.getBoundingClientRect();
         const clickPct = ((e.clientX - box.left) / box.width) * 100;
 
-        yellow = document.createElement("div");
-        yellow.className = "segment override";
-        yellow.style.position = "absolute";
-        yellow.style.left = clickPct + "%";
-        yellow.style.width = "5%";
+        yellow = document.createElement('div');
+        yellow.className = 'segment override';
+        yellow.style.position = 'absolute';
+        yellow.style.left = Math.max(0, Math.min(clickPct, 95)) + '%';
+        yellow.style.width = '5%';
 
-        // right handle only
-        const rightH = document.createElement("div");
-        rightH.style.position = "absolute";
-        rightH.style.top = "0";
-        rightH.style.right = "0";
-        rightH.style.width = "6px";
-        rightH.style.height = "100%";
-        rightH.style.cursor = "ew-resize";
+        // Right handle
+        const rightH = document.createElement('div');
+        rightH.style.position = 'absolute';
+        rightH.style.top = '0';
+        rightH.style.right = '0';
+        rightH.style.width = '6px';
+        rightH.style.height = '100%';
+        rightH.style.cursor = 'ew-resize';
+        rightH.style.background = '#0003';
         yellow.appendChild(rightH);
 
         yellow.onmousedown = e2 => {
-            if (e2.target === rightH) drag = "resize-right";
-            else drag = "move";
+            if (e2.target === rightH) drag = 'resize-right';
+            else drag = 'move';
             startX = e2.clientX;
             e2.preventDefault();
         };
@@ -195,7 +253,7 @@ function drawTimeline() {
         timeline.appendChild(yellow);
     };
 
-    document.onmouseup = () => drag = null;
+    document.onmouseup = () => { drag = null; };
     document.onmousemove = e => {
         if (!drag || !yellow) return;
         const dx = e.clientX - startX;
@@ -207,21 +265,22 @@ function drawTimeline() {
         let leftPct = (ybox.left - box.left) / box.width * 100;
         let widthPct = ybox.width / box.width * 100;
 
-        if (drag === "move") {
+        if (drag === 'move') {
             leftPct += dx / box.width * 100;
             leftPct = Math.max(0, Math.min(leftPct, 100 - widthPct));
         }
-        if (drag === "resize-right") {
+        if (drag === 'resize-right') {
             widthPct += dx / box.width * 100;
             if (leftPct + widthPct > 100) widthPct = 100 - leftPct;
             if (widthPct < 1) widthPct = 1;
         }
 
-        yellow.style.left = leftPct + "%";
-        yellow.style.width = widthPct + "%";
+        yellow.style.left = leftPct + '%';
+        yellow.style.width = widthPct + '%';
     };
 }
 </script>
+
 
 </body>
 </html>
