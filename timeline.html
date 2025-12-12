@@ -98,8 +98,7 @@ function parseTime(t) {
 }
 
 function drawTimeline() {
-    const raw = document.getElementById("inputBox").value.trim().split("
-");
+    const raw = document.getElementById("inputBox").value.trim().split("\n");
     const timeline = document.getElementById("timeline");
     timeline.innerHTML = "";
 
@@ -107,15 +106,30 @@ function drawTimeline() {
     const end = 17 * 60 + 30;
     const total = end - start;
 
+    // Hour markers FIRST
+    for (let h = 8; h <= 17; h++) {
+        const pos = ((h * 60 - start) / total) * 100;
+
+        const m = document.createElement("div");
+        m.className = "hour-marker";
+        m.style.left = pos + "%";
+        timeline.appendChild(m);
+
+        const label = document.createElement("div");
+        label.className = "hour-label";
+        label.style.left = pos + "%";
+        label.textContent = h + ":00";
+        timeline.appendChild(label);
+    }
+
+    // Parse calls
     let calls = raw.map(line => {
-        let parts = line.split("	");
+        let parts = line.split("\t");
         if (parts.length !== 2) return null;
-        return {
-            from: parseTime(parts[0]),
-            to: parseTime(parts[1])
-        };
+        return { from: parseTime(parts[0]), to: parseTime(parts[1]) };
     }).filter(x => x);
 
+    // Busy segments
     calls.forEach(c => {
         let div = document.createElement("div");
         div.className = "segment busy";
@@ -124,13 +138,12 @@ function drawTimeline() {
         timeline.appendChild(div);
     });
 
+    // Free segments
     let freeSegments = [];
     let last = start;
 
     calls.forEach(c => {
-        if (c.from > last) {
-            freeSegments.push({ from: last, to: c.from });
-        }
+        if (c.from > last) freeSegments.push({ from: last, to: c.from });
         last = c.to;
     });
     if (last < end) freeSegments.push({ from: last, to: end });
@@ -143,7 +156,7 @@ function drawTimeline() {
         timeline.appendChild(div);
     });
 
-    // Yellow override tool
+    // Yellow override drag tool
     let selecting = false;
     let startX = 0;
     const yellow = document.createElement("div");
@@ -167,32 +180,6 @@ function drawTimeline() {
     };
 
     timeline.onmouseup = () => selecting = false;
-
-    // Hour markers
-    for (let h = 8; h <= 17; h++) {
-        const pos = ((h * 60 - start) / total) * 100;
-
-        const m = document.createElement("div");
-        m.className = "hour-marker";
-        m.style.left = pos + "%";
-        timeline.appendChild(m);
-
-        const label = document.createElement("div");
-        label.className = "hour-label";
-        label.style.left = pos + "%";
-        label.textContent = h + ":00";
-        timeline.appendChild(label);
-    }
-
-    timeline.appendChild(m);
-        timeline.appendChild(label);
-    );("click", e => {
-        const override = document.createElement("div");
-        override.className = "segment override";
-        override.style.left = ((e.offsetX / timeline.clientWidth) * 100) + "%";
-        override.style.width = "5%";
-        timeline.appendChild(override);
-    });
 }
 </script>
 
