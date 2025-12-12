@@ -171,14 +171,20 @@ function drawTimeline() {
     // Hour markers
     for (let h = 8; h <= 17; h++) {
         const pos = ((h * 60 - start) / total) * 100;
+
         const m = document.createElement("div");
         m.className = "hour-marker";
         m.style.left = pos + "%";
+        timeline.appendChild(m);
+
         const label = document.createElement("div");
         label.className = "hour-label";
         label.style.left = pos + "%";
         label.textContent = h + ":00";
-        timeline.appendChild(m);
+        timeline.appendChild(label);
+    }
+
+    timeline.appendChild(m);
         timeline.appendChild(label);
     );("click", e => {
         const override = document.createElement("div");
