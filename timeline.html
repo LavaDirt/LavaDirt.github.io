@@ -57,7 +57,20 @@
         .free { background-color: #7ed957; }
         .busy { background-color: #ff5757; }
         .override { background-color: yellow !important; }
-    </style>
+            .hour-marker {
+            position: absolute;
+            top: 0;
+            width: 1px;
+            height: 100%;
+            background: #0003;
+        }
+        .hour-label {
+            position: absolute;
+            top: -20px;
+            font-size: 12px;
+            transform: translateX(-50%);
+        }
+</style>
 </head>
 <body>
 
@@ -85,7 +98,8 @@ function parseTime(t) {
 }
 
 function drawTimeline() {
-    const raw = document.getElementById("inputBox").value.trim().split("\n");
+    const raw = document.getElementById("inputBox").value.trim().split("
+");
     const timeline = document.getElementById("timeline");
     timeline.innerHTML = "";
 
@@ -94,7 +108,7 @@ function drawTimeline() {
     const total = end - start;
 
     let calls = raw.map(line => {
-        let parts = line.split("\t");
+        let parts = line.split("	");
         if (parts.length !== 2) return null;
         return {
             from: parseTime(parts[0]),
@@ -129,7 +143,44 @@ function drawTimeline() {
         timeline.appendChild(div);
     });
 
-    timeline.addEventListener("click", e => {
+    // Yellow override tool
+    let selecting = false;
+    let startX = 0;
+    const yellow = document.createElement("div");
+    yellow.className = "segment override";
+    yellow.style.display = "none";
+    timeline.appendChild(yellow);
+
+    timeline.onmousedown = e => {
+        selecting = true;
+        startX = e.offsetX;
+        yellow.style.left = (startX / timeline.clientWidth) * 100 + "%";
+        yellow.style.width = "0%";
+        yellow.style.display = "block";
+    };
+
+    timeline.onmousemove = e => {
+        if (!selecting) return;
+        const curr = e.offsetX;
+        const width = curr - startX;
+        yellow.style.width = (width / timeline.clientWidth) * 100 + "%";
+    };
+
+    timeline.onmouseup = () => selecting = false;
+
+    // Hour markers
+    for (let h = 8; h <= 17; h++) {
+        const pos = ((h * 60 - start) / total) * 100;
+        const m = document.createElement("div");
+        m.className = "hour-marker";
+        m.style.left = pos + "%";
+        const label = document.createElement("div");
+        label.className = "hour-label";
+        label.style.left = pos + "%";
+        label.textContent = h + ":00";
+        timeline.appendChild(m);
+        timeline.appendChild(label);
+    );("click", e => {
         const override = document.createElement("div");
         override.className = "segment override";
         override.style.left = ((e.offsetX / timeline.clientWidth) * 100) + "%";
