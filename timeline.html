@@ -103,7 +103,8 @@ function parseTime(t) {
 }
 
 function drawTimeline() {
-    const raw = document.getElementById("inputBox").value.trim().split("\n");
+    const raw = document.getElementById("inputBox").value.trim().split("
+");
     const timeline = document.getElementById("timeline");
 
     timeline.innerHTML = ""; // Clear everything EXCEPT yellow we re-add later
@@ -129,7 +130,7 @@ function drawTimeline() {
 
     // --- Parse call ranges ---
     let calls = raw.map(line => {
-        let parts = line.split("\t");
+        let parts = line.split("	");
         if (parts.length !== 2) return null;
         return { from: parseTime(parts[0]), to: parseTime(parts[1]) };
     }).filter(x => x);
