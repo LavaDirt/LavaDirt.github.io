@@ -87,7 +87,7 @@
             let amountPaid = parseFloat(document.getElementById('amountPaid').value);
             const activeDate = new Date(document.getElementById("ServiceActiveDate").value);
             const cancelDate = new Date(document.getElementById("ServiceCancelDate").value);
-            let daysLeft = Math.floor(cancelDate-activeDate / (1000 * 60 * 60 * 24));
+            let daysLeft = Math.floor((cancelDate-activeDate) / (1000 * 60 * 60 * 24));
             let debug = cancelDate - activeDate;
             
             if (isNaN(retailPrice) || isNaN(daysLeft)) {
