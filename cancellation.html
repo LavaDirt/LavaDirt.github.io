@@ -97,8 +97,10 @@
             if (isNaN(amountPaid)) amountPaid = 0;
             if (daysLeft > 180) daysLeft = 180;
             if (daysLeft < 0) daysLeft = 0;
+
+            console.log(daysLeft)
             
-            let fee = ((retailPrice - amountPaid) * (1-Math.floor(cancelDate - activeDate / (1000 * 60 * 60 * 24))) / 180);
+            let fee = ((retailPrice - amountPaid) * (1-Math.floor(daysLeft / (1000 * 60 * 60 * 24))) / 180);
             document.getElementById('result').innerText = "Cancellation Fee: $" + fee.toFixed(2);
             
             if (Math.random() < 0.1) {
