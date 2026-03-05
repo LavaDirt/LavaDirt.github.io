@@ -73,6 +73,7 @@
 
         <button id="calculateButton" onclick="calculateFee()">Calculate</button>
         <h3 id="result"></h3>
+        <h3 id="activeDays"></h3>
     </div>
 
     <script>
@@ -110,6 +111,7 @@
             } else {
                 document.getElementById('calculateButton').innerText = "Calculate";
             }
+            document.getElementById('activeDays').innerText = "Active days:" + daysLeft;
         }
     </script>
 </body>
