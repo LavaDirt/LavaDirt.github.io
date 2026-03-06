@@ -59,23 +59,26 @@
 
     <h2>Commitment Fee Calculator</h2>
     <div class="container">
-        <label>Service Active Date:</label>
+        <label>Service Activation Date:</label>
         <input type="date" id="ServiceActiveDate"><br><br>
         
-        <label>Service Cancel Date:</label>
+        <label>Service Termination Date:</label>
         <input type="date" id="ServiceCancelDate"><br><br>
 
-        <label for="retailPrice">Full commitment fee price:</label>
+        <label for="retailPrice">No commitment fee price:</label>
         <input type="number" id="retailPrice" placeholder="Enter retail price">
 
-        <label for="amountPaid">Amount already paid (0 if free phone, empty = 0):</label>
+        <label for="amountPaid">Commitment fee price:</label>
         <input type="number" id="amountPaid" placeholder="Enter amount paid">
 
         <button id="calculateButton" onclick="calculateFee()">Calculate</button>
         <h3 id="result"></h3>
         <h3 id="activeDays"></h3>
     </div>
-
+    <h2>Service activation date clarifications:</h2>
+    <h4>Transfer-out case: The date the customer transfers out to another provider.
+Non-usage case: The de-enroll date (or the buy-out request date if it occurs before de-enroll).
+Service cancellation request case: The date the customer cancels the service.</h4>
     <script>
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
@@ -106,11 +109,6 @@
             let fee = ((retailPrice - amountPaid) * (1- (daysLeft / 180)));
             document.getElementById('result').innerText = "Commitment Fee: $" + fee.toFixed(2);
             
-            if (Math.random() < 0.1) {
-                document.getElementById('calculateButton').innerText = "I'm ready to get yelled at by our valued customer";
-            } else {
-                document.getElementById('calculateButton').innerText = "Calculate";
-            }
             document.getElementById('activeDays').innerText = "Active days: " + daysLeft;
         }
     </script>
