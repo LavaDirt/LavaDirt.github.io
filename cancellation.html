@@ -57,7 +57,7 @@
         <a href="timeline.html">Timeline Visualiser for CRM+</a>
     </nav>
 
-    <h2>Commitment Fee Calculator</h2>
+    <h2>Buy-out fee Calculator</h2>
     <div class="container">
         <label>Service Activation Date:</label>
         <input type="date" id="ServiceActiveDate"><br><br>
@@ -107,7 +107,7 @@
             console.log(debug);
             
             let fee = ((retailPrice - amountPaid) * (1- (daysLeft / 180)));
-            document.getElementById('result').innerText = "Commitment Fee: $" + fee.toFixed(2);
+            document.getElementById('result').innerText = "Buy-out Fee: $" + fee.toFixed(2);
             
             document.getElementById('activeDays').innerText = "Active days: " + daysLeft;
         }
