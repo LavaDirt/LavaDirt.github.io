@@ -194,7 +194,7 @@ async function buildPdf(file){
   const wb = new ExcelJS.Workbook();
   await wb.xlsx.load(await file.arrayBuffer());
 
-  const doc = new jspdf.jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+  const doc = new jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
   const customFont = await tryLoadFont(doc);
   const font = customFont || 'helvetica';
   const styleOf = (bold, italic) =>
@@ -277,10 +277,10 @@ async function buildPdf(file){
       startY: margin,
       margin: { top: margin, bottom: margin, left: margin, right: margin },
       tableWidth: widths.reduce((a, w) => a + w * s, 0),
-      theme: 'grid',
+      theme: 'plain',
       styles: {
         font, fontSize, cellPadding: PAD * s, overflow: 'linebreak',
-        lineColor: [190, 190, 190], lineWidth: 0.4 * s, textColor: [0, 0, 0],
+        lineWidth: 0, textColor: [0, 0, 0],
         valign: 'bottom',
       },
       columnStyles,
