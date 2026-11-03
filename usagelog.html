@@ -1,70 +1,105 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Usage Log PDF Generator</title>
-<style>
-  :root{
-    --bg:#f4f5f7; --card:#fff; --text:#1c2330; --muted:#667085; --line:#d8dce3;
-    --accent:#1f6feb; --accent-d:#1858bd; --err:#c62828; --ok:#1b7f3b;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{ --bg:#14171c; --card:#1d2128; --text:#e8ebf0; --muted:#9aa4b2; --line:#343a46; --accent:#4c8dff; --accent-d:#3b78e6; }
-  }
-  *{box-sizing:border-box}
-  body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);
-       font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:24px}
-  .card{width:100%;max-width:520px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px}
-  h1{font-size:20px;margin:0 0 4px}
-  p.sub{margin:0 0 22px;color:var(--muted);font-size:14px}
-  label{display:block;font-weight:600;font-size:13px;margin:16px 0 6px}
-  input[type=text],input[type=date]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;
-       background:transparent;color:inherit;font:inherit}
-  input:focus{outline:2px solid var(--accent);outline-offset:1px}
-  .drop{border:2px dashed var(--line);border-radius:10px;padding:22px;text-align:center;cursor:pointer;color:var(--muted)}
-  .drop.over{border-color:var(--accent);color:var(--accent)}
-  .drop strong{color:var(--text)}
-  .row{display:flex;gap:10px;align-items:center}
-  .row span{color:var(--muted)}
-  button{margin-top:24px;width:100%;padding:12px;border:0;border-radius:8px;background:var(--accent);
-         color:#fff;font:600 15px system-ui,sans-serif;cursor:pointer}
-  button:hover{background:var(--accent-d)}
-  button:disabled{opacity:.6;cursor:wait}
-  .preview{margin-top:14px;font-size:13px;color:var(--muted);word-break:break-word}
-  .msg{margin-top:14px;font-size:14px;min-height:20px}
-  .msg.err{color:var(--err)} .msg.ok{color:var(--ok)}
-  .note{margin-top:18px;font-size:12px;color:var(--muted)}
-</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Usage Log PDF Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+
+        nav {
+            background-color: #333;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav a {
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a.active {
+            background-color: #555;
+            border-radius: 5px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        /* additions for this page */
+        .container h1 { font-size: 20px; margin: 0 0 4px; }
+        .sub, .note, .preview { color: #666; font-size: 13px; }
+        .preview { word-break: break-word; }
+        label { display: block; font-weight: bold; font-size: 14px; margin-top: 12px; }
+        .drop { border: 2px dashed #ccc; border-radius: 8px; padding: 20px; cursor: pointer; color: #666; margin: 10px 0; }
+        .drop.over { border-color: #333; color: #333; }
+        .drop strong { color: #333; word-break: break-all; }
+        .row { display: flex; gap: 8px; align-items: center; }
+        .row span { color: #666; }
+        button { cursor: pointer; }
+        button:disabled { opacity: .6; cursor: wait; }
+        .msg { margin-top: 10px; font-size: 14px; min-height: 20px; }
+        .msg.err { color: #c62828; } .msg.ok { color: #1b7f3b; }
+    </style>
 </head>
 <body>
-<main class="card">
-  <h1>Usage Log PDF Generator</h1>
-  <p class="sub">Upload an Excel file and get back a formatted PDF. Everything runs in your browser.</p>
 
-  <form id="form">
-    <label>Excel file</label>
-    <div class="drop" id="drop">
-      <input type="file" id="file" accept=".xlsx,.xlsm" hidden>
-      <span id="dropText"><strong>Click to choose</strong> or drag a file here (.xlsx)</span>
-    </div>
+    <nav>
+        <a href="cancellation.html">Buy-out Fee Calculator</a>
+        <a href="numbers.html">Numbers Index</a>
+        <a href="timeline.html">Timeline Visualiser for CRM+</a>
+        <a href="#" class="active">Usage Log Request</a>
+    </nav>
 
-    <label for="reason">Reason</label>
-    <input type="text" id="reason" placeholder="e.g. Audit" required>
+    <main class="container">
+        <h1>Usage Log PDF Generator</h1>
+        <p class="sub">Upload an Excel file and get back a formatted PDF. Everything runs in your browser.</p>
 
-    <label>Period</label>
-    <div class="row">
-      <input type="date" id="start" required>
-      <span>to</span>
-      <input type="date" id="end" required>
-    </div>
+        <form id="form">
+            <label>Excel file</label>
+            <div class="drop" id="drop">
+                <input type="file" id="file" accept=".xlsx,.xlsm" hidden>
+                <span id="dropText"><strong>Click to choose</strong> or drag a file here (.xlsx)</span>
+            </div>
 
-    <div class="preview" id="preview"></div>
-    <button type="submit" id="btn">Generate PDF</button>
-    <div class="msg" id="msg" role="status"></div>
-  </form>
-  <div class="note">Your file is processed on this device and never uploaded.</div>
-</main>
+            <label for="reason">Reason</label>
+            <input type="text" id="reason" placeholder="e.g. Audit" required>
+
+            <label>Period</label>
+            <div class="row">
+                <input type="date" id="start" required>
+                <span>to</span>
+                <input type="date" id="end" required>
+            </div>
+
+            <div class="preview" id="preview"></div>
+            <button type="submit" id="btn">Generate PDF</button>
+            <div class="msg" id="msg" role="status"></div>
+        </form>
+        <div class="note">Your file is processed on this device and never uploaded.</div>
+    </main>
 
 <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -97,7 +132,7 @@ function updatePreview(){ const n = buildName(); $('preview').textContent = n ? 
 ['reason','start','end'].forEach(id => $(id).addEventListener('input', updatePreview));
 
 /* ------------------------------------------------------- Excel helpers */
-const BASE_FONT = 9, PAD = 3, MAX_COL_PT = 260;
+const BASE_FONT = 11, PAD = 3, MAX_COL_PT = 260;
 const FIT_COLS = 8;               // columns A-H get autofit + centered
 
 const colToNum = s => [...s].reduce((n, ch) => n * 26 + ch.charCodeAt(0) - 64, 0);
@@ -173,20 +208,28 @@ function mergeMap(ws){
   return { masters, covered };
 }
 
-/* Optional Unicode font (needed for e.g. Vietnamese). Put TTFs in /fonts. */
+/* Fonts: looks for Calibri in /fonts (calibri.ttf + calibrib.ttf), then Carlito, then Noto Sans. */
 async function tryLoadFont(doc){
   const toB64 = buf => { let s = ''; const a = new Uint8Array(buf);
     for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode.apply(null, a.subarray(i, i + 0x8000));
     return btoa(s); };
-  try {
-    const [r, b] = await Promise.all([fetch('fonts/NotoSans-Regular.ttf'), fetch('fonts/NotoSans-Bold.ttf')]);
-    if (!r.ok || !b.ok) return null;
-    doc.addFileToVFS('NotoSans-Regular.ttf', toB64(await r.arrayBuffer()));
-    doc.addFileToVFS('NotoSans-Bold.ttf', toB64(await b.arrayBuffer()));
-    doc.addFont('NotoSans-Regular.ttf', 'NotoSans', 'normal');
-    doc.addFont('NotoSans-Bold.ttf', 'NotoSans', 'bold');
-    return 'NotoSans';
-  } catch { return null; }
+  const candidates = [
+    ['Calibri',  'fonts/calibri.ttf',            'fonts/calibrib.ttf'],
+    ['Carlito',  'fonts/Carlito-Regular.ttf',    'fonts/Carlito-Bold.ttf'],
+    ['NotoSans', 'fonts/NotoSans-Regular.ttf',   'fonts/NotoSans-Bold.ttf'],
+  ];
+  for (const [fam, reg, bold] of candidates) {
+    try {
+      const [r, b] = await Promise.all([fetch(reg), fetch(bold)]);
+      if (!r.ok || !b.ok) continue;
+      doc.addFileToVFS(fam + '-Regular.ttf', toB64(await r.arrayBuffer()));
+      doc.addFileToVFS(fam + '-Bold.ttf', toB64(await b.arrayBuffer()));
+      doc.addFont(fam + '-Regular.ttf', fam, 'normal');
+      doc.addFont(fam + '-Bold.ttf', fam, 'bold');
+      return fam;
+    } catch { /* try next */ }
+  }
+  return null;
 }
 
 /* ------------------------------------------------------- PDF builder */
@@ -206,7 +249,7 @@ async function buildPdf(file){
 
   for (const ws of wb.worksheets) {
     if (!ws.rowCount || ws.state === 'hidden') continue;
-    const nCols = Math.max(ws.columnCount, FIT_COLS);
+    const nCols = FIT_COLS;   // only A-H are printed; anything further right (e.g. column I) is dropped
     const { masters, covered } = mergeMap(ws);
 
     // ---- autofit A-H (measure real text widths), keep original widths elsewhere
@@ -287,7 +330,7 @@ async function buildPdf(file){
     });
   }
   if (first) throw new Error('The workbook has no data to print.');
-  return doc;
+  return { doc, fontName: customFont };
 }
 
 /* ---------------------------------------------------------- submit */
@@ -305,10 +348,13 @@ $('form').addEventListener('submit', async ev => {
     if (s > e) throw new Error('The start date must be on or before the end date.');
 
     btn.disabled = true; btn.textContent = 'Generating…';
-    const doc = await buildPdf(f);
+    const { doc, fontName } = await buildPdf(f);
     const name = buildName();
     doc.save(name);
     msg.className = 'msg ok'; msg.textContent = 'Done – downloaded ' + name;
+    if (fontName !== 'Calibri') {
+      msg.textContent += ` (Calibri font not found, used ${fontName || 'Helvetica'} instead – add fonts/calibri.ttf and fonts/calibrib.ttf to the site.)`;
+    }
   } catch (err) {
     console.error(err);
     msg.className = 'msg err'; msg.textContent = err.message || 'Something went wrong.';
