@@ -124,7 +124,7 @@ const safeName = t => t.replace(/[\\/:*?"<>|\r\n]+/g, ' ').trim();
 function buildName(){
   const r = $('reason').value.trim(), s = $('start').value, e = $('end').value;
   if (!r || !s || !e) return '';
-  return safeName(`Usage log request - ${r} - ${mdy(s)} to ${mdy(e)}`) + '.pdf';
+  return safeName(`Usage Log Request - ${r} - ${mdy(s)} to ${mdy(e)}`) + '.pdf';
 }
 function updatePreview(){ const n = buildName(); $('preview').textContent = n ? 'File name: ' + n : ''; }
 ['reason','start','end'].forEach(id => $(id).addEventListener('input', updatePreview));
