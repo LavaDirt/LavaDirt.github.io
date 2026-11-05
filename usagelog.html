@@ -131,7 +131,7 @@ function updatePreview(){ const n = buildName(); $('preview').textContent = n ? 
 
 /* ------------------------------------------------------- Excel helpers */
 const BASE_FONT = 11, PAD = 3, MAX_COL_PT = 260;
-const FIT_COLS = 8;               // columns A-H get autofit + centered
+const FIT_COLS = 7;               // columns A-H get autofit + centered
 
 const colToNum = s => [...s].reduce((n, ch) => n * 26 + ch.charCodeAt(0) - 64, 0);
 const pad2 = n => String(n).padStart(2, '0');
