@@ -119,12 +119,13 @@ function showFile(){
   s.textContent = f ? f.name : 'Click to choose';
   $('dropText').append(s, f ? '' : ' or drag a file here (.xlsx)');
 }
-const mdy = iso => { const [y,m,d] = iso.split('-'); return `${m}-${d}-${y}`; };
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const mdy = iso => { const [y,m,d] = iso.split('-'); return `${MONTHS[+m-1]} ${d} ${y}`; };
 const safeName = t => t.replace(/[\\/:*?"<>|\r\n]+/g, ' ').trim();
 function buildName(){
   const r = $('reason').value.trim(), s = $('start').value, e = $('end').value;
   if (!r || !s || !e) return '';
-  return safeName(`Usage Log Request - ${r} - ${mdy(s)} to ${mdy(e)}`) + '.pdf';
+  return safeName(`Usage Log Request - ${r} - ${mdy(s)} - ${mdy(e)}`) + '.pdf';
 }
 function updatePreview(){ const n = buildName(); $('preview').textContent = n ? 'File name: ' + n : ''; }
 ['reason','start','end'].forEach(id => $(id).addEventListener('input', updatePreview));
